@@ -1,0 +1,20 @@
+spring:
+  h2:
+    console:
+      enabled: true
+      path: '/console'
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: 'jdbc:h2:file:D:/Projekty/todofreetime/leisure-time-management/leisure-time-management/todo-db'
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+keycloak:
+  auth-server-url: 'http://localhost:8180/auth'
+  realm: 'TodoApp'
+  resource: 'todo-spring-client'
+  public-client: true
