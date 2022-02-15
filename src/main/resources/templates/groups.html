@@ -44,7 +44,7 @@
             <hr class="M(0)" />
         </dt>
         <dd>
-            <a th:href="@{/tasks.html(group=${group.id})}">
+            <a th:href="@{/tasks/{id}(id=${group.id})}">
                 <ul class="P(0)">
                     <li th:each="task : ${group.tasks}">
                         <span th:unless="${task.done}" th:text="|${task.description}|"></span>
@@ -55,7 +55,7 @@
         </dd>
     </dl>
         <fieldset>
-            <legend>Nowy projekt</legend>
+            <legend>Nowa grupa</legend>
             <!--/*@thymesVar id="group" type="com.example.leisuretimemanagement.model.projection.GroupWriteModel"*/-->
             <form action="#" method="post" th:action="@{/groups}" th:object="${group}">
                 <p class="C(red)" th:if="${#fields.hasAnyErrors()}" th:errors="*{all}"></p>

@@ -6,6 +6,9 @@ import com.example.leisuretimemanagement.model.projection.GroupReadModel;
 import com.example.leisuretimemanagement.model.projection.GroupTaskWriteModel;
 import com.example.leisuretimemanagement.model.projection.GroupWriteModel;
 import com.example.leisuretimemanagement.model.projection.ProjectWriteModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.stream.Collectors;
 
 //@Service
 public class ProjectService {
+    public static final int SIZE_PAGE = 3;
     private final ProjectRepository repository;
     private final TaskGroupRepository taskGroupRepository;
     private final TaskConfigurationProperties config;
@@ -25,8 +29,25 @@ public class ProjectService {
         this.service = service;
     }
 
+    private Pageable getPageable(int currentPage) {
+        return PageRequest.of(currentPage - 1, SIZE_PAGE);
+    }
+
     public List<Project> readAll(){
         return repository.findAll();
+    }
+
+    public Page<Project> readAllPrepared(int currentPage ,String descriptionProject){
+        System.out.println(descriptionProject);
+        if(descriptionProject != null) {
+            return !descriptionProject.isBlank() & currentPage>0 ?
+                    repository.findAll(descriptionProject, getPageable(currentPage)) : readPage(currentPage);
+        }
+        return readPage(currentPage);
+    }
+
+    public Page<Project> readPage(int currentPage){
+        return repository.findAll(getPageable(currentPage));
     }
 
     public Project save(ProjectWriteModel toSave){

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>List of tasks</title>
+</head>
+<body>
+<main>
+    <dl th:each="task : ${tasks}">
+        <dt>
+            <label>
+                <a th:href="@{/tasks/toggle/{id}(id=${task.id})}">
+                <span th:unless="${task.done}" th:text="${task.description}" ></span>
+                <del th:if="${task.done}" th:text="${task.description}"></del>
+                </a>
+                <small th:text="|(${task.deadline})|"></small>
+            </label>
+            <hr class="M(0)" />
+        </dt>
+        <dd>
+        </dd>
+    </dl>
+</main>
+</body>
+</html>

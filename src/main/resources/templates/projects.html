@@ -29,42 +29,29 @@
 </head>
 <body>
 <main>
-    <h1 th:if="${message != null}" th:text="${message}"></h1>
-    <!--/*@thymesVar id="projects" type="java.util.List<com.example.leisuretimemanagement.model.Project>"*/-->
-    <dl th:each="project : ${projects}" class="Bd P(10px)">
-        <dt th:text="${project.description}">...</dt>
-        <dd>
-            <ul class="P(0)">
-                <li th:each="step : ${project.steps}" th:text="|${step.description} (${step.daysToDeadline} dni)|"></li>
-            </ul>
-            <form action="#" method="post" th:action="@{/projects/{projectId}(projectId=${project.id})}">
-                <label>Deadline:
-                    <input name="deadline" type="datetime-local" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" />
-                </label>
-                <button type="submit">Utwórz taski >></button>
-            </form>
-        </dd>
-    </dl>
+    <div id="container">
+        <h1 th:if="${message != null}" th:text="${message}"></h1>
+        <div>
         <fieldset>
             <legend>Nowy projekt</legend>
             <!--/*@thymesVar id="project" type="com.example.leisuretimemanagement.model.projection.ProjectWriteModel"*/-->
             <form action="#" method="post" th:action="@{/projects}" th:object="${project}">
                 <p class="C(red)" th:if="${#fields.hasAnyErrors()}" th:errors="*{all}"></p>
-            <label>Opis:
-                <input type="text" th:field="*{description}" th:errorclass="'Bdc(red)'" />
-            </label>
-            <fieldset th:each="step,stepStat : *{steps}">
-                <legend th:text="|Krok ${stepStat.index + 1}|"></legend>
                 <label>Opis:
-                    <input type="text" th:field="*{steps[__${stepStat.index}__].description}" th:errorclass="'Bdc(red)'" />
+                    <input type="text" th:field="*{description}" th:errorclass="'Bdc(red)'" />
                 </label>
-                <label>Dni do końca projektu:
-                    <input type="number" th:field="*{steps[__${stepStat.index}__].daysToDeadline}" th:errorclass="'Bdc(red)'" />
-                </label>
-            </fieldset>
-            <div>
-                <button type="submit" name="addStep"> + </button>
-            </div>
+                <fieldset th:each="step,stepStat : *{steps}">
+                    <legend th:text="|Krok ${stepStat.index + 1}|"></legend>
+                    <label>Opis:
+                        <input type="text" th:field="*{steps[__${stepStat.index}__].description}" th:errorclass="'Bdc(red)'" />
+                    </label>
+                    <label>Dni do końca projektu:
+                        <input type="number" th:field="*{steps[__${stepStat.index}__].daysToDeadline}" th:errorclass="'Bdc(red)'" />
+                    </label>
+                </fieldset>
+                <div>
+                    <button type="submit" name="addStep"> + </button>
+                </div>
                 <p>
                     <button type="submit">Dodaj</button>
                     <button type="reset">Wyczyść</button>
@@ -72,7 +59,41 @@
                 </p>
             </form>
         </fieldset>
-
+        </div>
+        <h3> Dostępne projekty:</h3>
+        <div>
+        <form action="#" th:action="@{/projects/1}">
+            <label>Filtrowanie:
+                <input type="text" name="description" th:value="${description}" />
+                <button type="submit">Filtruj</button>
+                <button type="reset">Wyczyść</button>
+            </label>
+        </form>
+        <!--/*@thymesVar id="projects" type="java.util.List<com.example.leisuretimemanagement.model.Project>"*/-->
+        <dl th:each="project : ${projects}" class="Bd P(10px)">
+            <dt th:text="${project.description}">...</dt>
+            <dd>
+                <ul class="P(0)">
+                    <li th:each="step : ${project.steps}" th:text="|${step.description} (${step.daysToDeadline} dni)|"></li>
+                </ul>
+                <form action="#" method="post" th:action="@{/projects/{projectId}(projectId=${project.id})}">
+                    <label>Deadline:
+                        <input name="deadline" type="datetime-local" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" />
+                    </label>
+                    <button type="submit">Utwórz taski >></button>
+                </form>
+            </dd>
+        </dl>
+        </div>
+        <div>
+            <label th:text="|Ilość dostepnych projektów ${totalElements} - Stron ${currentPage} z ${totalPages} - |"></label>
+            &nbsp;
+            <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                <a th:if="${currentPage != i}" th:href="@{'/projects/'+${i}+'?description='+${description}}" th:text=" ${i}"></a>
+                <span th:unless="${currentPage != i}" th:text=" ${i}"></span>
+            </span>
+        </div>
+    </div>
 </main>
 </body>
 </html>
