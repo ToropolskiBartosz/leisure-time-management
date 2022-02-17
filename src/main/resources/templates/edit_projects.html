@@ -29,6 +29,7 @@
 <body>
 <main>
     <div id="contain">
+        <h1 th:if="${message != null}" th:text="${message}"></h1>
         <fieldset>
             <legend th:text="| Edytuj projekt o id: ${id}|"> </legend>
             <!--/*@thymesVar id="project" type="com.example.leisuretimemanagement.model.projection.ProjectWriteModel"*/-->
@@ -46,6 +47,7 @@
                         <input type="number" th:field="*{steps[__${stepStat.index}__].daysToDeadline}" th:errorclass="'Bdc(red)'" />
                     </label>
                         <input type="hidden" th:field="*{steps[__${stepStat.index}__].id}" th:errorclass="'Bdc(red)'" />
+                    <a th:href="@{'/projects/step/delete/'+${id}+'/'+ *{steps[__${stepStat.index}__].id}}" th:text="Usuń"></a>
                 </fieldset>
                 <div>
                     <button type="submit" name="addStep"> + </button>

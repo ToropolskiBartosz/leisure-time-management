@@ -43,6 +43,8 @@ public class TaskGroupController {
         return "groups";
     }
 
+
+
     @PostMapping(produces = MediaType.TEXT_HTML_VALUE, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     String addGroup(
             @ModelAttribute("group") @Valid GroupWriteModel current,

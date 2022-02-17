@@ -6,6 +6,7 @@ import com.example.leisuretimemanagement.model.projection.GroupReadModel;
 import com.example.leisuretimemanagement.model.projection.GroupTaskWriteModel;
 import com.example.leisuretimemanagement.model.projection.GroupWriteModel;
 import com.example.leisuretimemanagement.model.projection.ProjectWriteModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,9 @@ public class ProjectService {
     private final TaskGroupRepository taskGroupRepository;
     private final TaskConfigurationProperties config;
     private final TaskGroupService service;
+
+    @Autowired
+    private ProjectStepRepository projectStepRepository;
 
     public ProjectService(ProjectRepository repository, TaskGroupRepository taskGroupRepository, TaskConfigurationProperties config, TaskGroupService service) {
         this.repository = repository;
@@ -60,6 +64,19 @@ public class ProjectService {
         }
     }
 
+    @Transactional
+    public void deleteStepFromProject(int projectId, int stepId){
+        var project = repository.findById(projectId).
+                orElseThrow();
+        ProjectStep stepProject = project.getSteps().stream()
+                .filter(step -> step.getId() == stepId)
+                .findFirst()
+                .orElseThrow();
+        System.out.println(stepProject.getDescription());
+        project.getSteps().remove(stepProject);
+        projectStepRepository.deleteById(stepId);
+    }
+
     public Project save(ProjectWriteModel toSave){
         return repository.save(toSave.toProject());
     }
@@ -77,11 +94,13 @@ public class ProjectService {
 
     public void updateProject(int id, ProjectWriteModel current) {
         var result = repository.findById(id)
+                .map(project -> {
+                    project.setDescription(current.getDescription());
+                    current.getSteps().forEach(step -> step.setProject(project));
+                    project.setSteps(new HashSet<>(current.getSteps()));
+                    return project;
+                })
                 .orElseThrow(() -> new IllegalArgumentException("Project with given id not found"));
-        result.setDescription(current.getDescription());
-        current.getSteps().forEach(step -> step.setProject(result));
-        current.getSteps().forEach(s->System.out.println(s.getId()));
-        result.setSteps(new HashSet<>(current.getSteps()));
         repository.save(result);
     }
 

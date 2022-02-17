@@ -67,7 +67,6 @@ public class ProjectController {
                          @PathVariable int id){
         logger.info("We get project with id:" + id +" to edit");
         ProjectWriteModel source = service.getById(id);
-        source.getSteps().forEach(s -> System.out.println(s.getId()));
         model.addAttribute("project", source);
         model.addAttribute("id", id);
         return "edit_projects";
@@ -80,6 +79,26 @@ public class ProjectController {
         service.updateProject(id,current);
         return "edit_projects";
     }
+
+    @PostMapping(path="/edit/{id}",params = "addStep")
+    String addProjectStepEdit(Model model,
+                              @PathVariable int id,
+                              @ModelAttribute("project") ProjectWriteModel current){
+        current.getSteps().add(new ProjectStep());
+        model.addAttribute("id", id);
+        return "edit_projects";
+    }
+
+    @GetMapping("/step/delete/{id}/{stepId}")
+    String deleteStepFromProject(@PathVariable int id,
+                                 @PathVariable int stepId,
+                                 Model model){
+        service.deleteStepFromProject(id,stepId);
+        model.addAttribute("project",service.getById(id));
+        model.addAttribute("message","Powiodła się edycja");
+        return "edit_projects";
+    }
+
 
     @PostMapping
     String addProject(
