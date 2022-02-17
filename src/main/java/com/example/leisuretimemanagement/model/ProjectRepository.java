@@ -18,4 +18,6 @@ public interface ProjectRepository {
     Page<Project> findAll(Pageable page);
 
     List<Project> findAll(String description);
+
+    void deleteById(Integer integer);
 }

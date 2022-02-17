@@ -9,9 +9,13 @@ import com.example.leisuretimemanagement.model.projection.ProjectWriteModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 //@Service
@@ -29,12 +33,16 @@ public class ProjectService {
         this.service = service;
     }
 
+    public List<Project> readAll(){
+        return repository.findAll();
+    }
+
     private Pageable getPageable(int currentPage) {
         return PageRequest.of(currentPage - 1, SIZE_PAGE);
     }
 
-    public List<Project> readAll(){
-        return repository.findAll();
+    public Page<Project> readPage(int currentPage){
+        return repository.findAll(getPageable(currentPage));
     }
 
     public Page<Project> readAllPrepared(int currentPage ,String descriptionProject){
@@ -46,12 +54,35 @@ public class ProjectService {
         return readPage(currentPage);
     }
 
-    public Page<Project> readPage(int currentPage){
-        return repository.findAll(getPageable(currentPage));
+    public void deleteProject(int id){
+        if(repository.findById(id).isPresent()){
+            repository.deleteById(id);
+        }
     }
 
     public Project save(ProjectWriteModel toSave){
         return repository.save(toSave.toProject());
+    }
+
+    public ProjectWriteModel getById(int id){
+        return repository.findById(id)
+                .map(p -> {
+                    var project = new ProjectWriteModel();
+                    project.setDescription(p.getDescription());
+                    project.setSteps(new ArrayList<>(p.getSteps()));
+                    return project;
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Project with given id not found"));
+    }
+
+    public void updateProject(int id, ProjectWriteModel current) {
+        var result = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Project with given id not found"));
+        result.setDescription(current.getDescription());
+        current.getSteps().forEach(step -> step.setProject(result));
+        current.getSteps().forEach(s->System.out.println(s.getId()));
+        result.setSteps(new HashSet<>(current.getSteps()));
+        repository.save(result);
     }
 
     public GroupReadModel createGroup(LocalDateTime deadline, int projectId){
@@ -76,5 +107,4 @@ public class ProjectService {
                     return service.createGroup(targetGroup, project);
                 }).orElseThrow(() -> new IllegalArgumentException("Project with given id not found"));
     }
-
 }

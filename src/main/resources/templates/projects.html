@@ -60,8 +60,8 @@
             </form>
         </fieldset>
         </div>
-        <h3> Dostępne projekty:</h3>
         <div>
+            <h3> Dostępne projekty:</h3>
         <form action="#" th:action="@{/projects/1}">
             <label>Filtrowanie:
                 <input type="text" name="description" th:value="${description}" />
@@ -81,6 +81,8 @@
                         <input name="deadline" type="datetime-local" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" />
                     </label>
                     <button type="submit">Utwórz taski >></button>
+                    <a th:href="@{/projects/delete/{id}(id=${project.id})}"> Usuń X </a>
+                    <a th:href="@{/projects/edit/{id}(id=${project.id})}" > Edytuj -> </a>
                 </form>
             </dd>
         </dl>

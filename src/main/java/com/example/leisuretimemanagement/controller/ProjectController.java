@@ -5,6 +5,8 @@ import com.example.leisuretimemanagement.model.Project;
 import com.example.leisuretimemanagement.model.ProjectStep;
 import com.example.leisuretimemanagement.model.projection.ProjectWriteModel;
 import io.micrometer.core.annotation.Timed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,8 +21,11 @@ import java.util.List;
 
 @Controller
 //@PreAuthorize("hasRole('ROLE_ADMIN')")
+@IllegalExceptionProcessing
 @RequestMapping("/projects")
 public class ProjectController {
+    private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
+
     private final ProjectService service;
 
     public ProjectController(ProjectService service) {
@@ -28,9 +33,8 @@ public class ProjectController {
     }
 
     @GetMapping
-    String showProject(Model model,
-                       @Param("description") String description){
-        return showCurrentPageProject(model,1, description);
+    String showProject(Model model){
+        return showCurrentPageProject(model,1, "");
     }
 
     @GetMapping("/{page}")
@@ -50,6 +54,32 @@ public class ProjectController {
         return "projects";
     }
 
+    @GetMapping("/delete/{id}")
+    String deleteProject(Model model,
+                         @PathVariable int id){
+        logger.info("We get project with id:" + id +" to delete");
+        service.deleteProject(id);
+        return showProject(model);
+    }
+
+    @GetMapping("/edit/{id}")
+    String editProject(Model model,
+                         @PathVariable int id){
+        logger.info("We get project with id:" + id +" to edit");
+        ProjectWriteModel source = service.getById(id);
+        source.getSteps().forEach(s -> System.out.println(s.getId()));
+        model.addAttribute("project", source);
+        model.addAttribute("id", id);
+        return "edit_projects";
+    }
+
+    @PostMapping("/edit/{id}")
+    String editProjectSave(Model model,
+                           @PathVariable int id,
+                           @ModelAttribute("project") ProjectWriteModel current){
+        service.updateProject(id,current);
+        return "edit_projects";
+    }
 
     @PostMapping
     String addProject(
@@ -58,13 +88,13 @@ public class ProjectController {
             Model model){
         if(bindingResult.hasErrors()) {
             System.out.println("czy to działa");
-            return "projects";
+            return showProject(model);
         }
         service.save(current);
         model.addAttribute("project", new ProjectWriteModel());
         model.addAttribute("projects",getProjects());
         model.addAttribute("message", "Dodano projekt");
-        return "projects";
+        return showProject(model);
     }
 
     @PostMapping(params = "addStep")

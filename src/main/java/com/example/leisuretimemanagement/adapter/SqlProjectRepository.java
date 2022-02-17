@@ -29,6 +29,7 @@ interface SqlProjectRepository extends ProjectRepository,JpaRepository<Project,I
     @Query(nativeQuery = true,
             value ="SELECT * FROM PROJECTS p JOIN PROJECT_STEPS s " +
                     " ON p.ID = s.PROJECT_ID "
-                    + "WHERE p.DESCRIPTION LIKE %:description%")
+                    + "WHERE p.DESCRIPTION LIKE %:description% ")
     Page<Project> findAll(@Param("description") String description, Pageable page);
+
 }
