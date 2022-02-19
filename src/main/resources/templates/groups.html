@@ -61,13 +61,13 @@
             </p>
         </form>
     </fieldset>
-    <h2>Dostępne grupy</h2>
+    <h2>Zadania do wykonania</h2>
     <dl th:each="group : ${groups}" class="Bd P(10px)">
         <dt>
             <label>
-                <input type="checkbox" />
                 <span th:text="${group.description}" ></span>
                 <small th:text="|${group.deadline}|"></small>
+                <a th:href="@{/groups/toggle/{groupId}(groupId=${group.id})}"> X </a>
             </label>
             <hr class="M(0)" />
         </dt>
@@ -82,6 +82,14 @@
             </a>
         </dd>
     </dl>
+    <div>
+        <label th:text="|Ilość dostepnych projektów ${totalElements} - Stron ${currentPage} z ${totalPages} - |"></label>
+        &nbsp;
+        <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                <a th:if="${currentPage != i}" th:href="@{'/groups/'+${i}}" th:text=" ${i}"></a>
+                <span th:unless="${currentPage != i}" th:text=" ${i}"></span>
+            </span>
+    </div>
 </main>
 </body>
 </html>

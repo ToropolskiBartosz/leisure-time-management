@@ -5,6 +5,8 @@ import com.example.leisuretimemanagement.model.*;
 import com.example.leisuretimemanagement.model.projection.GroupReadModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -176,6 +178,11 @@ class ProjectServiceTest {
         }
 
         @Override
+        public Page<TaskGroup> findAll(Pageable page) {
+            return null;
+        }
+
+        @Override
         public boolean existsByDoneIsFalseAndProject_Id(Integer projectId) {
             return map.values().stream()
                     .filter(group -> !group.isDone())
@@ -186,6 +193,11 @@ class ProjectServiceTest {
         public boolean existsByDescription(String description) {
             return map.values().stream()
                     .anyMatch(group -> group.getDescription().equals(description));
+        }
+
+        @Override
+        public Page<TaskGroup> findAllByDoneFalse(Pageable page) {
+            return null;
         }
     }
 }

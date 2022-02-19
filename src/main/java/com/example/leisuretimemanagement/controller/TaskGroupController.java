@@ -3,6 +3,7 @@ package com.example.leisuretimemanagement.controller;
 import com.example.leisuretimemanagement.logic.TaskGroupService;
 import com.example.leisuretimemanagement.model.ProjectStep;
 import com.example.leisuretimemanagement.model.Task;
+import com.example.leisuretimemanagement.model.TaskGroup;
 import com.example.leisuretimemanagement.model.TaskRepository;
 import com.example.leisuretimemanagement.model.projection.GroupReadModel;
 import com.example.leisuretimemanagement.model.projection.GroupTaskWriteModel;
@@ -10,6 +11,7 @@ import com.example.leisuretimemanagement.model.projection.GroupWriteModel;
 import com.example.leisuretimemanagement.model.projection.ProjectWriteModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -39,11 +43,32 @@ public class TaskGroupController {
 
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
     String showGroups(Model model){
+
+        return showGroupsPage(model, 1);
+    }
+
+    @GetMapping(path = "/{page}",produces = MediaType.TEXT_HTML_VALUE)
+    String showGroupsPage(Model model,
+                          @PathVariable("page") int currentPage){
+        Page<TaskGroup> pages = service.readPage(currentPage);
+        long totalElements = pages.getTotalElements();
+        int totalPages = pages.getTotalPages();
+
+        model.addAttribute("totalElements", totalElements);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("groups", service.mapPageTaskGroupIntoDTO(pages));
         model.addAttribute("group", new GroupWriteModel());
         return "groups";
     }
 
-
+    @GetMapping(path = "/toggle/{id}",produces = MediaType.TEXT_HTML_VALUE)
+    String toggleGroup(Model model,
+                      @PathVariable int id){
+        logger.info("Toggle group id: "+id);
+        service.toggleGroup(id);
+        return showGroupsPage(model, 1);
+    }
 
     @PostMapping(produces = MediaType.TEXT_HTML_VALUE, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     String addGroup(

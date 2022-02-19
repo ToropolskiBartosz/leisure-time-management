@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App: groups</title>
+    <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm.min.css">
+    <style>
+        .Bd {
+            border: solid 1px black;
+        }
+
+        .Bdc\(red\) {
+            border-color: red !important;
+        }
+
+        .C\(red\) {
+            color: red;
+        }
+
+        .P\(0\) {
+            padding: 0;
+        }
+
+        .M\(0\) {
+            margin: 0;
+        }
+
+        .P\(10px\) {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h2>Raport: </h2>
+    <dl th:each="report : ${reports}" class="Bd P(10px)">
+        <dt>
+            <label>
+                <span th:text="${report.description}" ></span>
+                <small th:text="|--- Stan: ${report.done} ---|"></small>
+                <small th:text="| Ilość zmian: ${report.changesCount}|"></small>
+            </label>
+            <hr class="M(0)" />
+        </dt>
+    </dl>
+</main>
+</body>
+</html>

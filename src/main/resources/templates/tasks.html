@@ -6,20 +6,22 @@
 </head>
 <body>
 <main>
-    <dl th:each="task : ${tasks}">
-        <dt>
-            <label>
-                <a th:href="@{/tasks/toggle/{id}(id=${task.id})}">
-                <span th:unless="${task.done}" th:text="${task.description}" ></span>
-                <del th:if="${task.done}" th:text="${task.description}"></del>
-                </a>
-                <small th:text="|(${task.deadline})|"></small>
-            </label>
-            <hr class="M(0)" />
-        </dt>
-        <dd>
-        </dd>
-    </dl>
+    <div id="contain" style="padding: 100px;">
+        <dl th:each="task : ${tasks}">
+            <dt>
+                <label>
+                    <a th:href="@{'/tasks/toggle/'+ ${task.id} +'?fromGroupId='+${fromGroupId} }">
+                    <span th:unless="${task.done}" th:text="${task.description}" ></span>
+                    <del th:if="${task.done}" th:text="${task.description}"></del>
+                    </a>
+                    <small th:text="|(${task.deadline})|"></small>
+                </label>
+
+            </dt>
+            <dd>
+            </dd>
+        </dl>
+    </div>
 </main>
 </body>
 </html>

@@ -20,4 +20,5 @@ interface SqlTaskGroupRepository extends TaskGroupRepository,JpaRepository<TaskG
 
     @Override
     boolean existsByDescription(String description);
+
 }

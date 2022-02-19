@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,18 +26,17 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/tasks")
 public class TaskController {
     private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
-    private final ApplicationEventPublisher eventPublisher;
     private final TaskRepository taskRepository;
     private final TaskService service;
 
-    TaskController(ApplicationEventPublisher eventPublisher, TaskRepository taskRepository, TaskService service){
-        this.eventPublisher = eventPublisher;
+    TaskController(TaskRepository taskRepository, TaskService service){
         this.taskRepository = taskRepository;
         this.service = service;
     }
 
     @GetMapping
     String readAllTask(Model model){
+        model.addAttribute("fromGroupId","");
         return "tasks";
     }
 
@@ -44,21 +44,29 @@ public class TaskController {
     String readAllTask(@PathVariable int id,
                        Model model){
         model.addAttribute("tasks", taskRepository.findAllByGroup_Id(id));
+        model.addAttribute("fromGroupId",id);
         return "tasks";
     }
 
     @GetMapping("/toggle/{id}")
     public String toggleTask(@PathVariable int id,
+            @Param("fromGroupId") String fromGroupId,
                       Model model){
         logger.info("toggleTask with id: "+id);
         if(!taskRepository.existsById(id)){
             logger.info("toggleTask with id: "+id);
-            return "tasks";
         }else {
             service.toggleTask(id);
-            model.addAttribute("tasks",getTasks());
-            return "tasks";
+            if(!fromGroupId.isBlank()){
+                int groupId = Integer.parseInt(fromGroupId);
+                model.addAttribute("fromGroupId",groupId);
+                model.addAttribute("tasks",taskRepository.findAllByGroup_Id(groupId));
+            }else{
+                model.addAttribute("fromGroupId","");
+                model.addAttribute("tasks",getTasks());
+            }
         }
+        return "tasks";
     }
 
     @ModelAttribute("tasks")
