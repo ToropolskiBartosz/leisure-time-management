@@ -14,4 +14,8 @@ public class SsoController {
         request.logout();
         return "index";
     }
+    @GetMapping("/login")
+    String login(HttpServletRequest request){
+        return "index";
+    }
 }

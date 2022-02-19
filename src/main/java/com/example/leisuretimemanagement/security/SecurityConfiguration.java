@@ -15,11 +15,11 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 
-@EnableGlobalMethodSecurity(
-        jsr250Enabled = true,
-        securedEnabled = true,
-        prePostEnabled = true
-)
+//@EnableGlobalMethodSecurity(
+//        jsr250Enabled = true,
+//        securedEnabled = true,
+//        prePostEnabled = true
+//)
 @KeycloakConfiguration
 public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
     @Bean
@@ -47,9 +47,12 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         http.authorizeRequests()
-//                .antMatchers("/info/*").hasRole("USER")
-//                .antMatchers("/tasks/*").hasRole("USER")
-//                .antMatchers("/projects").hasRole("ADMIN")
+                .antMatchers("/login").hasRole("USER")
+                .antMatchers("/info/*").hasRole("USER")
+                .antMatchers("/tasks/*").hasRole("USER")
+                .antMatchers("/groups/*").hasRole("USER")
+                .antMatchers("/projects/*").hasRole("ADMIN")
+                .antMatchers("/reports/*").hasRole("ADMIN")
                 .anyRequest().permitAll();
     }
 }

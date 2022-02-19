@@ -15,17 +15,20 @@
             <li sec:authorize="hasRole('ADMIN')">
                 <a href="/projects">Projekty</a>
             </li>
-            <li>
-                <a href="/projects">Projekty</a>
-            </li>
-            <li>
+            <li sec:authorize="hasRole('ADMIN')">
                 <a href="/reports">Raporty</a>
             </li>
-            <li>
+            <li sec:authorize="hasRole('USER')">
                 <a href="/groups">Grupy zadań</a>
             </li>
-            <li>
+            <li sec:authorize="hasRole('USER')">
                 <a href="/tasks">Zadania</a>
+            </li>
+            <li sec:authorize="!hasRole('USER')">
+                <a href="/login">Logowanie</a>
+            </li>
+            <li sec:authorize="hasRole('USER')">
+                <a href="/logout">Wyloguj się</a>
             </li>
         </ul>
     </nav>
